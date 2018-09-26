@@ -8,7 +8,7 @@
           </div>
           <div class="aui-head-name">
               <h2>
-                  18906771111 <em>中奖次数0</em>
+                  {{currentUser().phoneNumber}} <em>中奖次数0</em>
               </h2>
           </div>
       </div>
