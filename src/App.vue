@@ -1,21 +1,20 @@
 <template>
-  <div id="app">
+    <div id="app">
 
-    <router-view></router-view>
-    <mt-tabbar v-model="selected">
-      <template v-for="tab in tabs" v-if="!$route.meta.hideTab">
+        <router-view></router-view>
+        <mt-tabbar v-model="selected">
+            <template v-for="tab in tabs" v-if="!$route.meta.hideTab">
 
-        <mt-tab-item :id="tab.id" @click.native="gotoTab(tab.href)">
-          <img slot="icon" :src="getImgUrl(tab.image)"> {{tab.id}}
-        </mt-tab-item>
-      </template>
-    </mt-tabbar>
-  </div>
+                <mt-tab-item :id="tab.id" @click.native="gotoTab(tab.href)">
+                    <img slot="icon" :src="getImgUrl(tab.image)"> {{tab.id}}
+                </mt-tab-item>
+            </template>
+        </mt-tabbar>
+    </div>
 
 </template>
 
 <script>
-
 export default {
     name: "app",
     data() {
@@ -28,6 +27,9 @@ export default {
     },
     beforeUpdate: function() {
         this.initTabarActive();
+    },
+    mounted() {
+
     },
     methods: {
         initTabarActive() {

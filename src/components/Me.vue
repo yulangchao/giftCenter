@@ -1,74 +1,85 @@
 <template>
-  <div>
+    <div>
         <!--标题-->
-      <mt-header fixed title="我的账号"></mt-header>
-      <div class="aui-head-bg">
-          <div class="aui-head-user">
-              <img src="http://icons.iconarchive.com/icons/fazie69/league-of-legends-gold-border/256/Singed-icon.png" alt="">
-          </div>
-          <div class="aui-head-name">
-              <h2>
-                  {{currentUser().phoneNumber}} <em>中奖次数0</em>
-              </h2>
-          </div>
-      </div>
-      <div class="aui-flex b-line">
-          <div class="aui-flex-user">
-              <img src="http://www.17sucai.com/preview/1268063/2018-09-10/secure/images/icon-item-001.png" alt="">
-          </div>
-          <div class="aui-flex-box">
-              <h2>登录日志</h2>
-              <p>开启验证保护,账户更安全</p>
-          </div>
-          <div class="aui-flex-arrow"></div>
-      </div>
-      <div class="aui-flex b-line">
-          <div class="aui-flex-user">
-              <img src="http://www.17sucai.com/preview/1268063/2018-09-10/secure/images/icon-item-002.png" alt="">
-          </div>
-          <div class="aui-flex-box">
-              <h2>关于此app</h2>
-              <p>抽奖而生</p>
-          </div>
-          <div class="aui-flex-arrow"></div>
-      </div>
-      <div class="aui-flex b-line">
-          <div class="aui-flex-user">
-              <img src="http://www.17sucai.com/preview/1268063/2018-09-10/secure/images/icon-item-002.png" alt="">
-          </div>
-          <div class="aui-flex-box" @click="logout">
-              <h2>登出</h2>
-          </div>
-          <div class="aui-flex-arrow"></div>
-      </div>
+        <mt-header fixed title="我的账号"></mt-header>
+        <div class="aui-head-bg">
+            <div class="aui-head-user">
+                <img :src="this.mainUrl + '/uploads/20180928/d00a7e2dc1d2d23f5feb3a45b264f3a4.png'" alt="">
+            </div>
+            <div class="aui-head-name">
+                <h2>
+                    {{currentUser().mobile}}
+                    <em>中奖次数0</em>
+                </h2>
+            </div>
+        </div>
+        <div class="aui-flex b-line">
+            <div class="aui-flex-user">
+                <img src="http://www.17sucai.com/preview/1268063/2018-09-10/secure/images/icon-item-001.png" alt="">
+            </div>
+            <div class="aui-flex-box">
+                <h2>登录日志</h2>
+                <p>开启验证保护,账户更安全</p>
+            </div>
+            <div class="aui-flex-arrow"></div>
+        </div>
+        <div class="aui-flex b-line">
+            <div class="aui-flex-user">
+                <img src="http://www.17sucai.com/preview/1268063/2018-09-10/secure/images/icon-item-002.png" alt="">
+            </div>
+            <div class="aui-flex-box">
+                <h2>关于此app</h2>
+                <p>抽奖而生</p>
+            </div>
+            <div class="aui-flex-arrow"></div>
+        </div>
+        <div class="aui-flex b-line">
+            <div class="aui-flex-user">
+                <img src="http://www.17sucai.com/preview/1268063/2018-09-10/secure/images/icon-item-002.png" alt="">
+            </div>
+            <div class="aui-flex-box" @click="logout">
+                <h2>登出</h2>
+            </div>
+            <div class="aui-flex-arrow"></div>
+        </div>
 
-      
-  </div>
+    </div>
 </template>
 
 <script>
 import firebase from "firebase";
+import axios from "axios";
 export default {
-  name: "me",
-  data() {
-    return {};
-  },
-  methods: {
-    logout: function() {
-      firebase
-        .auth()
-        .signOut()
-        .then(() => {
-          this.$router.replace("home");
-        });
+    name: "me",
+    data() {
+        return {};
     },
-  }
+    methods: {
+        logout: function() {
+            this.$indicator.open("正在退出...");
+            axios
+                .get(this.url + "user/logout", {
+                    headers: this.getHeader()
+                })
+                .then(response => {
+                    firebase
+                        .auth()
+                        .signOut()
+                        .then(() => {
+                            this.$indicator.close();
+                            localStorage.removeItem('userInfo');
+                            this.$router.replace("home");
+                        });
+                })
+                .catch(error => {
+                    this.$indicator.close();
+                });
+        }
+    }
 };
 </script>
 
 <style lang="less" scoped>
-
-
 .aui-flex {
     display: -webkit-box;
     display: -webkit-flex;
@@ -130,7 +141,7 @@ export default {
     right: 2px;
 }
 .b-line:after {
-    content: '';
+    content: "";
     position: absolute;
     z-index: 2;
     bottom: 0;
@@ -144,60 +155,53 @@ export default {
     transform-origin: 0 100%;
 }
 
-
-
-
-
-
-
-
 .aui-head-bg {
-  background-image: url(http://www.17sucai.com/preview/1268063/2018-08-29/leaguer/images/head-bj.png);
-  height: 11rem;
-  background-size: 100%;
-  background-repeat: no-repeat;
-  position: relative;
+    background-image: url(http://www.17sucai.com/preview/1268063/2018-08-29/leaguer/images/head-bj.png);
+    height: 11rem;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    position: relative;
 }
 .aui-head-user {
-  width: 70px;
-  height: 70px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-left: -35px;
-  margin-top: -10px;
+    width: 70px;
+    height: 70px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -35px;
+    margin-top: -10px;
 }
 .aui-head-user img {
-  width: 100%;
-  height: auto;
-  display: block;
-  border: none;
-  border-radius: 100%;
+    width: 100%;
+    height: auto;
+    display: block;
+    border: none;
+    border-radius: 100%;
 }
 .aui-head-name {
-  width: 160px;
-  height: 25px;
-  position: absolute;
-  bottom: -5px;
-  left: 50%;
-  margin-left: -80px;
-  font-size: 14px;
-  text-align: center;
+    width: 160px;
+    height: 25px;
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    margin-left: -80px;
+    font-size: 14px;
+    text-align: center;
 }
 .aui-head-name h2 {
-  font-weight: bold;
-  font-size: 14px;
-  color: #333;
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
 }
 .aui-head-name h2 em {
-  background: #ea735e;
-  color: #fff;
-  font-size: 12px;
-  border-radius: 20px;
-  font-style: normal;
-  padding: 0 2px;
+    background: #ea735e;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 20px;
+    font-style: normal;
+    padding: 0 2px;
 }
 body {
-  padding: 0px !important;
+    padding: 0px !important;
 }
 </style>

@@ -6,13 +6,15 @@ import "mint-ui/lib/style.css";
 import router from "./router";
 import firebase from "firebase";
 import helper from "./helper/helper";
+import api from "./helper/api";
 import firebaseui from "firebaseui";
 import "firebaseui/dist/firebaseui.css";
 import App from "./App";
 
+
 Vue.use(MintUI);
 Vue.use(helper);
-
+Vue.use(api);
 Vue.config.productionTip = false;
 
 let app;

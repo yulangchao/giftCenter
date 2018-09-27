@@ -26,10 +26,10 @@
       <!--展示上拉加载的数据列表-->
       <ul id="dataList" class="data-list">
         <li v-for="pd in dataList" :key="pd.id">
-          <img class="pd-img mescroll-lazy-in" :imgurl="'https://img.cnsjw.cn/2014/07/rew-01.jpg'" src="http://www.mescroll.com/demo/res/img/loading8.gif">
+          <img class="pd-img mescroll-lazy-in" :imgurl="getImage(pd.item_image)" src="http://www.mescroll.com/demo/res/img/loading8.gif">
           <div class="pd-content">
-            <p class="pd-name">奖品:  <span>鱼饼 x 2</span></p>
-            <p class="pd-date">2018-09-22 19:30  <span>已参与</span></p>
+            <p class="pd-name">奖品:  <span>{{pd.item_title}} x {{pd.item_number}}</span></p>
+            <p class="pd-date">{{pd.open_time}}  <span v-if="currentUser()">已参与</span></p>
           </div>
         </li>
       </ul>
@@ -42,7 +42,7 @@
 import MescrollVue from "mescroll.js/mescroll.vue";
 // 模拟数据
 import mockData from "../mock/pdlist";
-
+import axios from "axios";
 export default {
   name: "home",
   components: {
@@ -126,6 +126,10 @@ export default {
     },
     // 切换菜单
     changeTab(type) {
+      if (type == 2 && !this.currentUser()){
+        this.$toast("请先登录");
+        this.$router.push('login');
+      }
       if (this.pdType !== type) {
         this.pdType = type;
         this.dataList = []; // 在这里手动置空列表,可显示加载中的请求进度
@@ -145,44 +149,19 @@ export default {
       successCallback,
       errorCallback
     ) {
-      // 延时一秒,模拟联网
-      setTimeout(() => {
-        // axios.get("xxxxxx", {
-        //   params: {
-        //     num: page.num, //页码
-        //     size: page.size //每页长度
-        //   }
-        // }).then((response)=> {
-        var listData = [];
-        // pdType 全部商品0; 奶粉1; 图书2;
-        if (pdType === 0) {
-          // 全部商品 (模拟分页数据)
-          for (var i = (pageNum - 1) * pageSize; i < pageNum * pageSize; i++) {
-            if (i === mockData.length) break;
-            listData.push(mockData[i]);
+        axios.get(this.url+"gift", {
+          params: {
+            page: pageNum, //页码
+            limit: pageSize, //每页长度
+            type: pdType
           }
-        } else if (pdType === 1) {
-          // 奶粉
-          for (var j = 0; j < mockData.length; j++) {
-            if (mockData[j].pdName.indexOf("奶") !== -1) {
-              listData.push(mockData[j]);
-            }
-          }
-        } else if (pdType === 2) {
-          // 图书
-          for (var k = 0; k < mockData.length; k++) {
-            if (mockData[k].pdName.indexOf("图书") !== -1) {
-              listData.push(mockData[k]);
-            }
-          }
-        }
-        // 回调
-        successCallback(listData);
-        // }).catch((e)=> {
-        //   //联网失败的回调,隐藏下拉刷新和上拉加载的状态;
-        //   errorCallback&&errorCallback()
-        // })
-      }, 1000);
+        }).then((response)=> {
+        //回调
+          successCallback(response.data.data);
+        }).catch((e)=> {
+          //联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+          errorCallback&&errorCallback()
+        })
     }
   }
 };
@@ -281,7 +260,7 @@ export default {
   /* margin-bottom: 15px; */
   /* position: fixed; */
   background: #fff;
-  z-index: 1;
+  z-index: 0;
   width: 90%;
   /* border-bottom: 10px solid #ededed; */
   margin: 0 auto;
