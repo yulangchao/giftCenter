@@ -9,9 +9,12 @@ import helper from "./helper/helper";
 import api from "./helper/api";
 import firebaseui from "firebaseui";
 import "firebaseui/dist/firebaseui.css";
+import VueClipboard from 'vue-clipboard2'
+
 import App from "./App";
 
 
+Vue.use(VueClipboard)
 Vue.use(MintUI);
 Vue.use(helper);
 Vue.use(api);

@@ -21,14 +21,12 @@ export default {
                             params: data
                         })
                         .then(response => {
-                            console.log(response);
                             this.$indicator.close();
                             if (response.data.code == 1) {
                                 localStorage.setItem(
                                     "userInfo",
                                     JSON.stringify(response.data.data.userinfo)
                                 );
-                                ui.delete();
                                 this.$router.replace("home");
                             } else {
                             }
@@ -56,8 +54,11 @@ export default {
                 }
             ]
         };
-        var ui = new firebaseui.auth.AuthUI(firebase.auth());
-        ui.start("#firebaseui-auth-container", uiConfig);
-    }
+        window.ui = new firebaseui.auth.AuthUI(firebase.auth());
+        window.ui.start("#firebaseui-auth-container", uiConfig);
+    },
+    beforeDestroy() {
+        window.ui.delete();
+    },
 };
 </script>

@@ -1,7 +1,7 @@
 import firebase from "firebase";
 import axios from "axios";
 let api = function(Vue, options) {
-  Vue.prototype.url = "http://localhost/api/";
+  Vue.prototype.url = "https://gc.beimei.online/api/";
   Vue.prototype.getHeader = function(path = "", callback) {
     return {token:  this.currentUser().token};
   };

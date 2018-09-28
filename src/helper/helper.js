@@ -1,7 +1,7 @@
 import firebase from "firebase";
 import { Indicator, Toast, MessageBox } from "mint-ui";
 let helper = function(Vue, options) {
-  Vue.prototype.mainUrl = "http://localhost";
+  Vue.prototype.mainUrl = "https://gc.beimei.online";
   Vue.prototype.loading_spin = false;
   Vue.prototype.objectToForm = function(data) {
     let formData = new FormData();
@@ -18,7 +18,13 @@ let helper = function(Vue, options) {
       return null;
     }
   };
-  
+  Vue.prototype.getUid = function() {
+    if (firebase.auth().currentUser){
+      return firebase.auth().currentUser.uid;
+    }else{
+      return -1;
+    }
+  };
 
   Vue.prototype.getImage = function(path) {
     return this.mainUrl + path;

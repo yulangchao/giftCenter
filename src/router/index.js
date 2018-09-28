@@ -5,6 +5,7 @@ import Home from "@/components/Home";
 import Me from "@/components/Me";
 import Login from "@/components/Login";
 import SignUp from "@/components/SignUp";
+import Gift from "@/components/Gift";
 import firebase from "firebase";
 
 Vue.use(Router);
@@ -33,6 +34,14 @@ let router = new Router({
       component: Home
     },
     {
+      path: "/gift",
+      name: "Gift",
+      component: Gift,
+      meta: {
+        hideTab: true
+      }
+    },
+    {
       path: "/me",
       name: "Me",
       component: Me,
@@ -44,7 +53,7 @@ let router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-  let currentUser = firebase.auth().currentUser;
+  let currentUser = firebase.auth().currentUser && JSON.parse(localStorage.getItem('userInfo'));
   let requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   
   if (requiresAuth && !currentUser) {

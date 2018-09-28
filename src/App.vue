@@ -57,6 +57,7 @@ export default {
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
+    color:#4e6880;
     overflow: hidden;
 }
 ul {
@@ -81,6 +82,7 @@ body {
 .mint-tabbar {
     position: fixed;
     bottom: 0;
+    z-index: 2;
 }
 
 .mint-popup-3 {
