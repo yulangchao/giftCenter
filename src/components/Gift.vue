@@ -10,7 +10,30 @@
             <p>方式二：<br>保存以下二维码，并分享给朋友或者发布到朋友圈</p>
             <img class="qr-image" v-lazy="shareImage">
         </mt-popup>
-        <mt-header v-if="gift" fixed :title="gift.item_title"></mt-header>
+        <mt-popup v-if="gift" v-model="top10" popup-transition="popup-fade" class="mint-popup-1" style="top: 40px ">
+            <h1>倍率Top 10</h1>
+            <ul>
+                <li>
+                    <span class="top-mobile">手机号 </span>
+                    <span class="top-rate">倍率</span>
+                </li>
+                <li v-for="top in gift.top10">
+                    <span class="top-mobile">{{ top.mobile }} </span>
+                    <span>x {{ top.rate }}</span>
+                </li>
+            </ul>
+            <h1>分享增加倍率</h1>
+            <p>每一位朋友的抽奖将带来1倍率的增加。</p>
+            <div class="container">
+                <mt-button type="primary" v-clipboard:copy="shareLink" v-clipboard:success="onCopy" v-clipboard:error="onError">复制你的分享链接</mt-button>
+            </div>
+
+        </mt-popup>
+        <mt-header v-if="gift" fixed :title="gift.item_title">
+            <router-link to="/" slot="left">
+                <mt-button icon="back">返回</mt-button>
+            </router-link>
+        </mt-header>
         <div class="item-image-container" v-if="gift">
             <img class="item-image" v-lazy="mainUrl +gift.item_image">
             <div class="pd-content">
@@ -18,7 +41,10 @@
                     <span>{{gift.item_title}} x {{gift.item_number}}</span>
                 </p>
                 <p class="pd-date">{{gift.open_time}}
-                    <span>已参与</span>
+                    <template v-if="currentUser()">
+                        <span v-if="gift.if_attend">已参与</span>
+                        <span class="unattend" v-else>未参与</span>
+                    </template>
                 </p>
             </div>
             <div class="hline"></div>
@@ -38,13 +64,19 @@
 
                 <div class="start-gift">
                     <mt-button type="primary" @click.native="addRate = true" ref="button" plain size="small"><img src="../assets/gift/add.png" height="20" width="20" slot="icon">增加倍率</mt-button>
-                    <mt-button v-if="gift.if_open_switch == 0" type="danger" @click="startGift" plain size="small"><img src="../assets/gift/start.png" height="20" width="20" slot="icon">开始抽奖</mt-button>
-                    <mt-button v-else type="danger" plain size="small"><img src="../assets/gift/wait.gif" height="20" width="20" slot="icon">等待开奖</mt-button>
+                    <template v-if="gift.if_open_switch == 1">
+                        <mt-button type="danger" plain size="small"><img src="../assets/gift/wait.gif" height="20" width="20" slot="icon">已开奖</mt-button>
+                    </template>
+                    <template v-else>
+                        <mt-button v-if="!gift.if_attend" type="danger" @click="startGift" plain size="small"><img src="../assets/gift/start.png" height="20" width="20" slot="icon">开始抽奖</mt-button>
+                        <mt-button v-else type="danger" plain size="small"><img src="../assets/gift/wait.gif" height="20" width="20" slot="icon">等待开奖</mt-button>
+                    </template>
+
                 </div>
                 <p class="attend_count">
                     <span>参与人数: 1000,</span>
                     <span>
-                        <router-link to="/records">查看top 10 倍率王 ></router-link>
+                        <a @click="top10 = true">查看top 10 倍率王 ></a>
                     </span>
                 </p>
 
@@ -67,21 +99,37 @@ export default {
             gift: null,
             addRate: false,
             shareLink: "",
-            shareImage: ""
+            shareImage: "",
+            refer: "",
+            top10: false
         };
     },
     mounted() {
         this.$indicator.open();
         this.shareLink = location.href + "&u=" + this.getUid();
-        let link ="https://google.ca";
+
+        if (this.$route.query.hasOwnProperty("u")) {
+            this.refer = this.$route.query.u;
+        }
+        let link = "https://google.ca";
         axios
             .get(this.url + "gift/detail", {
-                params: this.$route.query
+                params: this.$route.query,
+                headers: this.getHeader()
             })
             .then(response => {
                 this.gift = response.data.data;
                 this.$indicator.close();
-                this.shareImage = this.mainUrl + `/qrcode/build?text=${this.shareLink.replace("/#/", "/%23/")}&label=%E6%9D%A5%E6%8A%BD%E5%A5%96%E5%95%A6%EF%BC%81${this.gift.item_title}x${this.gift.item_number}!&logo=1&labelhalign=0&labelvalign=3&foreground=%23ffffff&background=%23000000&size=300&padding=10&logosize=50&labelfontsize=14&errorcorrection=medium`
+                this.shareImage =
+                    this.mainUrl +
+                    `/qrcode/build?text=${this.shareLink.replace(
+                        "/#/",
+                        "/%23/"
+                    )}&label=%E6%9D%A5%E6%8A%BD%E5%A5%96%E5%95%A6%EF%BC%81${
+                        this.gift.item_title
+                    }x${
+                        this.gift.item_number
+                    }!&logo=1&labelhalign=0&labelvalign=3&foreground=%23ffffff&background=%23000000&size=300&padding=10&logosize=50&labelfontsize=14&errorcorrection=medium`;
             })
             .catch(error => {
                 this.$indicator.close();
@@ -90,13 +138,36 @@ export default {
     },
     methods: {
         onCopy: function(e) {
-            alert("复制完成!");
+            this.$messagebox.alert("复制完成!");
         },
         onError: function(e) {
-            alert("复制失败!");
+            this.$messagebox.alert("复制失败!");
         },
         startGift: function() {
             console.log(1);
+            if (!this.currentUser()) {
+                this.$toast("请先登录！");
+                this.$router.push({
+                    path: "/login",
+                    query: { redirect: location.hash } // 如果你使用钩子函数，your path 可以替换成to.fullPath
+                });
+            }
+            axios
+                .post(this.url + "gift/startGift", this.$route.query, {
+                    headers: this.getHeader()
+                })
+                .then(response => {
+                    console.log(response);
+                    this.gift.if_attend = 1;
+                    this.$toast("参加成功，等待开奖！");
+                    setTimeout(() => {
+                        this.addRate = true;
+                    }, 1000);
+                })
+                .catch(error => {
+                    this.$indicator.close();
+                    this.$toast("加载失败，请稍后再试");
+                });
         }
     }
 };
@@ -120,6 +191,12 @@ export default {
         margin-bottom: 10px;
         font-size: 14px;
     }
+    .top-mobile {
+        margin-right: 50px;
+    }
+    .top-rate {
+        margin-left: 15px;
+    }
 }
 .mint-popup-1::before {
     triangle: 10px top #fff;
@@ -140,7 +217,7 @@ export default {
 body {
     overflow: scroll !important;
 }
-.qr-image{
+.qr-image {
     width: 200px;
 }
 .item-image-container {
@@ -207,6 +284,10 @@ body {
         background-image: linear-gradient(90deg, #ff9000, #ff5101);
         border-radius: 5px;
         padding: 3px 6px;
+    }
+
+    .unattend {
+        background-image: linear-gradient(90deg, #e0c4a0, #8c7d76);
     }
 }
 </style>

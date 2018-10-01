@@ -27,7 +27,9 @@ export default {
                                     "userInfo",
                                     JSON.stringify(response.data.data.userinfo)
                                 );
-                                this.$router.replace("home");
+                                this.$router.push(
+                                    this.$route.query.redirect.replace("#", "") || "/"
+                                );
                             } else {
                             }
                         })
@@ -59,6 +61,6 @@ export default {
     },
     beforeDestroy() {
         window.ui.delete();
-    },
+    }
 };
 </script>

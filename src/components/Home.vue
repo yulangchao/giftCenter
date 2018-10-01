@@ -24,15 +24,18 @@
             <!--筛选条件; 模拟列表的重置和演示空布局的使用-->
 
             <!--展示上拉加载的数据列表-->
-            <ul id="dataList" class="data-list" >
-                <li v-for="pd in dataList" :key="pd.id"  @click="gotoGift(pd.id)">
+            <ul id="dataList" class="data-list">
+                <li v-for="pd in dataList" :key="pd.id" @click="gotoGift(pd.id)">
                     <img class="pd-img mescroll-lazy-in" :imgurl="getImage(pd.item_image)" src="http://www.mescroll.com/demo/res/img/loading8.gif">
                     <div class="pd-content">
                         <p class="pd-name">奖品:
                             <span>{{pd.item_title}} x {{pd.item_number}}</span>
                         </p>
                         <p class="pd-date">{{pd.open_time}}
-                            <span v-if="currentUser()">已参与</span>
+                            <template v-if="currentUser()">
+                                <span v-if="pd.if_attend">已参与</span>
+                                <span v-else class="unattend">未参与</span>
+                            </template>
                         </p>
                     </div>
                 </li>
@@ -165,7 +168,8 @@ export default {
                         page: pageNum, //页码
                         limit: pageSize, //每页长度
                         type: pdType
-                    }
+                    },
+                    headers: this.getHeader()
                 })
                 .then(response => {
                     //回调
@@ -192,6 +196,7 @@ export default {
     z-index: 1;
     height: auto !important;
     padding-bottom: 60px;
+    max-width: 800px;
 }
 .swiper {
     width: 100%;
@@ -256,10 +261,13 @@ export default {
     span {
         color: white;
         float: right;
-        margin-top:-5px;
+        margin-top: -5px;
         background-image: linear-gradient(90deg, #ff9000, #ff5101);
         border-radius: 5px;
         padding: 3px 6px;
+    }
+    .unattend {
+        background-image: linear-gradient(90deg, #e0c4a0, #8c7d76);
     }
 }
 

@@ -73,9 +73,11 @@ body {
     height: -o-calc(100vh - 100px) !important;
     /* Standard */
     height: calc(100vh - 100px) !important;
-    margin: 0px !important;
-    overflow: hidden !important;
+    margin: 0px auto !important;
+    max-width: 800px;
+
 }
+
 .mint-header {
     background: linear-gradient(90deg, #f53900f7, #ff0101f2) !important;
 }

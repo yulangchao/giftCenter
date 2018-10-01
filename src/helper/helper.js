@@ -1,7 +1,7 @@
 import firebase from "firebase";
 import { Indicator, Toast, MessageBox } from "mint-ui";
 let helper = function(Vue, options) {
-  Vue.prototype.mainUrl = "https://gc.beimei.online";
+  Vue.prototype.mainUrl = "http://localhost";
   Vue.prototype.loading_spin = false;
   Vue.prototype.objectToForm = function(data) {
     let formData = new FormData();
