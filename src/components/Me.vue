@@ -15,7 +15,7 @@
         </div>
         <div class="aui-flex b-line">
             <div class="aui-flex-user">
-                <img src="http://www.17sucai.com/preview/1268063/2018-09-10/secure/images/icon-item-001.png" alt="">
+                <img src="/static/icon-item-001.png" alt="">
             </div>
             <div class="aui-flex-box">
                 <h2>登录日志</h2>
@@ -25,7 +25,7 @@
         </div>
         <div class="aui-flex b-line">
             <div class="aui-flex-user">
-                <img src="http://www.17sucai.com/preview/1268063/2018-09-10/secure/images/icon-item-002.png" alt="">
+                <img src="/static/icon-item-002.png" alt="">
             </div>
             <div class="aui-flex-box">
                 <h2>关于此app</h2>
@@ -35,7 +35,7 @@
         </div>
         <div class="aui-flex b-line">
             <div class="aui-flex-user">
-                <img src="http://www.17sucai.com/preview/1268063/2018-09-10/secure/images/icon-item-002.png" alt="">
+                <img src="/static/icon-item-002.png" alt="">
             </div>
             <div class="aui-flex-box" @click="logout">
                 <h2>登出</h2>
@@ -156,7 +156,7 @@ export default {
 }
 
 .aui-head-bg {
-    background-image: url(http://www.17sucai.com/preview/1268063/2018-08-29/leaguer/images/head-bj.png);
+    background-image: url(/static/head-bj.png);
     height: 11rem;
     background-size: 100%;
     background-repeat: no-repeat;

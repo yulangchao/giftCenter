@@ -1,5 +1,12 @@
 <template>
-    <div id="firebaseui-auth-container"></div>
+    <div>
+        <mt-header fixed title="登录">
+            <a @click="$router.go(-1)" slot="left">
+                <mt-button icon="back">返回</mt-button>
+            </a>
+        </mt-header>
+        <div id="firebaseui-auth-container"></div>
+    </div>
 </template>
 <script>
 import firebase, { auth } from "firebase";
@@ -27,9 +34,16 @@ export default {
                                     "userInfo",
                                     JSON.stringify(response.data.data.userinfo)
                                 );
-                                this.$router.push(
-                                    this.$route.query.redirect.replace("#", "") || "/"
-                                );
+                                if (this.$route.query.redirect) {
+                                    this.$router.push(
+                                        this.$route.query.redirect.replace(
+                                            "#",
+                                            ""
+                                        )
+                                    );
+                                } else {
+                                    this.$router.push("/");
+                                }
                             } else {
                             }
                         })

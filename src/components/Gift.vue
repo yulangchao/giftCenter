@@ -1,5 +1,14 @@
 <template>
     <div>
+        <mt-popup v-if="gift" v-model="getGift" popup-transition="popup-fade" class="mint-popup-1" style="top: 40px ">
+            <h1>恭喜您中奖</h1>
+            <p>领奖方式请联系{{gift.company_name}}</p>
+
+            <router-link to="/home">
+                <mt-button icon="more" plain type="primary" size="small">查看更多抽奖</mt-button>
+            </router-link>
+        </mt-popup>
+
         <mt-popup v-model="addRate" popup-transition="popup-fade" class="mint-popup-1" style="top: 40px ">
             <h1>分享增加倍率</h1>
             <p>每一位朋友的抽奖将带来1倍率的增加。</p>
@@ -10,6 +19,7 @@
             <p>方式二：<br>保存以下二维码，并分享给朋友或者发布到朋友圈</p>
             <img class="qr-image" v-lazy="shareImage">
         </mt-popup>
+
         <mt-popup v-if="gift" v-model="top10" popup-transition="popup-fade" class="mint-popup-1" style="top: 40px ">
             <h1>倍率Top 10</h1>
             <ul>
@@ -63,6 +73,11 @@
             <div class="footer">
 
                 <div class="start-gift">
+                    <div>中奖名单:
+                        <p v-for="get in gift.get">
+                            <span class="top-mobile">{{ get.mobile }} </span>
+                        </p>
+                    </div>
                     <mt-button type="primary" @click.native="addRate = true" ref="button" plain size="small"><img src="../assets/gift/add.png" height="20" width="20" slot="icon">增加倍率</mt-button>
                     <template v-if="gift.if_open_switch == 1">
                         <mt-button type="danger" plain size="small"><img src="../assets/gift/wait.gif" height="20" width="20" slot="icon">已开奖</mt-button>
@@ -98,6 +113,7 @@ export default {
         return {
             gift: null,
             addRate: false,
+            getGift: false,
             shareLink: "",
             shareImage: "",
             refer: "",
@@ -112,6 +128,7 @@ export default {
             this.refer = this.$route.query.u;
         }
         let link = "https://google.ca";
+
         axios
             .get(this.url + "gift/detail", {
                 params: this.$route.query,
@@ -119,6 +136,13 @@ export default {
             })
             .then(response => {
                 this.gift = response.data.data;
+                if (this.currentUser() && this.gift.if_open_switch == 1) {
+                    for (let k of this.gift.get) {
+                        if (k.user_id == this.currentUser().id) {
+                            this.getGift = true;
+                        }
+                    }
+                }
                 this.$indicator.close();
                 this.shareImage =
                     this.mainUrl +
@@ -144,30 +168,30 @@ export default {
             this.$messagebox.alert("复制失败!");
         },
         startGift: function() {
-            console.log(1);
             if (!this.currentUser()) {
                 this.$toast("请先登录！");
                 this.$router.push({
                     path: "/login",
                     query: { redirect: location.hash } // 如果你使用钩子函数，your path 可以替换成to.fullPath
                 });
+            } else {
+                axios
+                    .post(this.url + "gift/startGift", this.$route.query, {
+                        headers: this.getHeader()
+                    })
+                    .then(response => {
+                        console.log(response);
+                        this.gift.if_attend = 1;
+                        this.$toast("参加成功，等待开奖！");
+                        setTimeout(() => {
+                            this.addRate = true;
+                        }, 1000);
+                    })
+                    .catch(error => {
+                        this.$indicator.close();
+                        this.$toast("加载失败，请稍后再试");
+                    });
             }
-            axios
-                .post(this.url + "gift/startGift", this.$route.query, {
-                    headers: this.getHeader()
-                })
-                .then(response => {
-                    console.log(response);
-                    this.gift.if_attend = 1;
-                    this.$toast("参加成功，等待开奖！");
-                    setTimeout(() => {
-                        this.addRate = true;
-                    }, 1000);
-                })
-                .catch(error => {
-                    this.$indicator.close();
-                    this.$toast("加载失败，请稍后再试");
-                });
         }
     }
 };

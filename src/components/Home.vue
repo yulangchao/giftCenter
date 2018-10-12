@@ -26,7 +26,7 @@
             <!--展示上拉加载的数据列表-->
             <ul id="dataList" class="data-list">
                 <li v-for="pd in dataList" :key="pd.id" @click="gotoGift(pd.id)">
-                    <img class="pd-img mescroll-lazy-in" :imgurl="getImage(pd.item_image)" src="http://www.mescroll.com/demo/res/img/loading8.gif">
+                    <img class="pd-img mescroll-lazy-in" :imgurl="getImage(pd.item_image)" src="/static/giphy.gif">
                     <div class="pd-content">
                         <p class="pd-name">奖品:
                             <span>{{pd.item_title}} x {{pd.item_number}}</span>
